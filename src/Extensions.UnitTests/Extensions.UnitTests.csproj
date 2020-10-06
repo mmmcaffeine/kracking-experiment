@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>AsIfByMagic.Extensions.UnitTests</AssemblyName>
+    <RootNamespace>AsIfByMagic.Extensions</RootNamespace>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>

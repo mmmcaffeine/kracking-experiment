@@ -55,5 +55,27 @@ namespace AsIfByMagic.Extensions.Validation
             // Assert
             actual.ShouldBeSameAs(value);
         }
+
+        [Test]
+        public void WhenNotEmpty_Guid_GivenEmptyGuid_Then_ExceptionThrown()
+        {
+            var thrown = Should.Throw<ArgumentException>(() => Guid.Empty.WhenNotEmpty("parameter"));
+
+            thrown.Message.ShouldStartWith("Value cannot be an empty guid.");
+            thrown.ParamName.ShouldBe("parameter");
+        }
+
+        [Test]
+        public void WhenNotEmpty_Guid_GivenNotEmptyGuid_Then_Value()
+        {
+            // Arrange
+            var value = Guid.NewGuid();
+
+            // Act
+            var actual = value.WhenNotEmpty("parameter");
+
+            // Assert
+            actual.ShouldBe(value);
+        }
     }
 }

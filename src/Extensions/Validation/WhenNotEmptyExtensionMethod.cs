@@ -32,5 +32,15 @@ namespace AsIfByMagic.Extensions.Validation
 
             return value;
         }
+
+        public static Guid WhenNotEmpty(this Guid value, string paramName)
+        {
+            if(value == Guid.Empty)
+            {
+                throw new ArgumentException("Value cannot be an empty guid.", paramName);
+            }
+
+            return value;
+        }
     }
 }

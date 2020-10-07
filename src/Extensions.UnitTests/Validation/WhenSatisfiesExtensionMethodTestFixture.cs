@@ -14,11 +14,41 @@ namespace AsIfByMagic.Extensions.Validation
         }
 
         [Test]
+        public void WhenSatisfiedBy_Given_ValueIsNull_Then_Exception()
+        {
+            // Arrange
+            var entity = (Entity) null;
+            var rule = Substitute.For<IRule<Entity>>();
+
+            // Act. Assert
+            var actual = Should.Throw<ArgumentNullException>(() => entity.WhenSatisfies(rule));
+
+            // Assert
+            actual.ParamName.ShouldBe("value");
+        }
+
+        [Test]
+        public void WhenSatisfiedBy_Given_RuleIsNull_Then_Exception()
+        {
+            // Arrange
+            var entity = new Entity { Name = "Maggie" };
+            var rule = (IRule<Entity>) null;
+
+            // Act. Assert
+            var actual = Should.Throw<ArgumentNullException>(() => entity.WhenSatisfies(rule));
+
+            // Assert
+            actual.ParamName.ShouldBe("rule");
+        }
+
+        [Test]
         public void WhenSatisfies_Given_RuleIsSatisfied_Then_Value()
         {
             // Arrange
             var entity = new Entity { Name = "Homer" };
             var rule = Substitute.For<IRule<Entity>>();
+
+            rule.SatisfiedBy(entity).Returns(true);
 
             // Act
             var actual = entity.WhenSatisfies(rule);

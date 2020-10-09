@@ -62,7 +62,7 @@ namespace AsIfByMagic.Extensions.Validation
         {
             // Arrange
             var entity = new Entity { Name = "Bart" };
-            var exception = new Exception("I will not break the rules... I will not break the rulees...");
+            var exception = new Exception("I will not break the rules... I will not break the rules...");
             var rule = Substitute.For<IRule<Entity>>();
 
             rule.SatisfiedBy(entity).Returns(false);

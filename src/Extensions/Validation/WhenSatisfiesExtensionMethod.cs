@@ -1,3 +1,6 @@
+using System;
+using System.Linq.Expressions;
+
 namespace AsIfByMagic.Extensions.Validation
 {
     public static class WhenSatisfiesExtensionMethod
@@ -13,6 +16,11 @@ namespace AsIfByMagic.Extensions.Validation
             }
 
             return value;
+        }
+
+        public static T WhenSatisfies<T>(this T value, Expression<Func<T, bool>> expression)
+        {
+            return value.WhenSatisfies((Rule<T>)expression);
         }
     }
 }

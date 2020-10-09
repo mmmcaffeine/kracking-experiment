@@ -14,7 +14,7 @@ namespace AsIfByMagic.Extensions.Validation
         }
 
         [Test]
-        public void WhenSatisfiedBy_Given_ValueIsNull_Then_Exception()
+        public void WhenSatisfies_Rule_Given_ValueIsNull_Then_Exception()
         {
             // Arrange
             var entity = (Entity) null;
@@ -28,7 +28,7 @@ namespace AsIfByMagic.Extensions.Validation
         }
 
         [Test]
-        public void WhenSatisfiedBy_Given_RuleIsNull_Then_Exception()
+        public void WhenSatisfies_Rule_Given_RuleIsNull_Then_Exception()
         {
             // Arrange
             var entity = new Entity { Name = "Maggie" };
@@ -42,7 +42,7 @@ namespace AsIfByMagic.Extensions.Validation
         }
 
         [Test]
-        public void WhenSatisfies_Given_RuleIsSatisfied_Then_Value()
+        public void WhenSatisfies_Rule_Given_RuleIsSatisfied_Then_Value()
         {
             // Arrange
             var entity = new Entity { Name = "Homer" };
@@ -58,7 +58,7 @@ namespace AsIfByMagic.Extensions.Validation
         }
 
         [Test]
-        public void WhenSatisifes_Given_RuleIsNotSatisfied_Then_ExceptionCreatedByRuleThrown()
+        public void WhenSatisfies_Rule_Given_RuleIsNotSatisfied_Then_ExceptionCreatedByRuleThrown()
         {
             // Arrange
             var entity = new Entity { Name = "Bart" };
@@ -73,6 +73,34 @@ namespace AsIfByMagic.Extensions.Validation
 
             // Assert
             actual.ShouldBeSameAs(exception);
+        }
+
+        [Test]
+        public void WhenSatisfies_Expression_Given_ExpressionIsSatisfied_Then_Value()
+        {
+            // Arrange
+            var entity = new Entity {Name = "Bart"};
+
+            // Act
+            var actual = entity.WhenSatisfies(x => x.Name.StartsWith("B"));
+
+            // Assert
+            actual.ShouldBeSameAs(entity);
+        }
+
+        [Test]
+        public void WhenSatisfies_Expression_Given_ExpressionIsNotSatisfied_Then_ExceptionThrown()
+        {
+            // Arrange
+            var entity = new Entity {Name = "Bart"};
+
+            // Act
+            var thrown = Should.Throw<Exception>(() => _ = entity.WhenSatisfies(x => x.Name.StartsWith("H")));
+            
+            // Assert
+            thrown.Message.ShouldStartWith("The value does not pass the specification defined by the expression");
+            thrown.Message.ShouldContain("x => x.Name.StartsWith(\"H\")");
+            thrown.Message.ShouldEndWith(".");
         }
     }
 }

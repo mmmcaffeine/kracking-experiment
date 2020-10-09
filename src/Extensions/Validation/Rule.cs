@@ -8,11 +8,15 @@ namespace AsIfByMagic.Extensions.Validation
         private Expression<Func<T, bool>> Expression { get; }
         private Func<T, bool> Predicate { get; }
 
-
         public Rule(Expression<Func<T, bool>> expression)
         {
-            Expression = expression.WhenNotNull(nameof(expression));
+            Expression = expression;
             Predicate = Expression.Compile();
+        }
+
+        public Exception CreateException(T value)
+        {
+            throw new Exception($"The passed value does not meet the criteria of: '{ Expression }'.");
         }
 
         public bool SatisfiedBy(T value)
@@ -20,9 +24,15 @@ namespace AsIfByMagic.Extensions.Validation
             return Predicate(value);
         }
 
-        public Exception CreateException(T value)
+        public static Rule<T> operator &(Rule<T> a, Rule<T> b)
         {
-            return new Exception($"The value does not pass the specification defined by the expression '{ Expression }'.");
+            var parameterA = a.Expression.Parameters[0];
+            var parameterB = b.Expression.Parameters[0];
+            var visitor = new SubstituteExpressionVisitor(parameterB, parameterA);
+            var body = System.Linq.Expressions.Expression.AndAlso(a.Expression.Body, visitor.Visit(b.Expression.Body));
+            var lambda = System.Linq.Expressions.Expression.Lambda<Func<T, bool>>(body, parameterA);
+
+            return new Rule<T>(lambda);
         }
 
         public static explicit operator Func<T, bool>(Rule<T> rule)
@@ -34,7 +44,7 @@ namespace AsIfByMagic.Extensions.Validation
         {
             return new Rule<T>(x => predicate(x));
         }
-        
+
         public static implicit operator Rule<T>(Expression<Func<T, bool>> expression)
         {
             return new Rule<T>(expression);

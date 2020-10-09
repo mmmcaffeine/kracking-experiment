@@ -65,5 +65,27 @@ namespace AsIfByMagic.Extensions.Validation
             };
             _ = list.AsQueryable();
         }
+
+        [Test]
+        public void AndOperator_Given_TwoRules_Then_CompositeRule()
+        {
+            // Arrange
+            var stanSmith = new Entity { Name = "Stan" };
+            var francineSmith = new Entity { Name = "Francine" };
+            var steveSmith = new Entity { Name = "Steve" };
+            var startsWithRule = new Rule<Entity>(x => x.Name.StartsWith("S"));
+            var endsWithRule = new Rule<Entity>(x => x.Name.EndsWith("e"));
+            var combinedRule = startsWithRule & endsWithRule;
+
+            // Act
+            var actualForStan = combinedRule.SatisfiedBy(stanSmith);
+            var actualForFrancine = combinedRule.SatisfiedBy(francineSmith);
+            var actualForSteve = combinedRule.SatisfiedBy(steveSmith);
+
+            // Assert
+            actualForStan.ShouldBeFalse();
+            actualForFrancine.ShouldBeFalse();
+            actualForSteve.ShouldBeTrue();
+        }
     }
 }

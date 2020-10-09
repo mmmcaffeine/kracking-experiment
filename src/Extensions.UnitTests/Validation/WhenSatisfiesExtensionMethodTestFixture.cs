@@ -6,7 +6,7 @@ using System;
 namespace AsIfByMagic.Extensions.Validation
 {
     [TestFixture]
-    public class WhenSatisifiesExtensionMethodTestFixture
+    public class WhenSatisfiesExtensionMethodTestFixture
     {
         public class Entity
         {
@@ -98,9 +98,27 @@ namespace AsIfByMagic.Extensions.Validation
             var thrown = Should.Throw<Exception>(() => _ = entity.WhenSatisfies(x => x.Name.StartsWith("H")));
             
             // Assert
-            thrown.Message.ShouldStartWith("The value does not pass the specification defined by the expression");
+            thrown.Message.ShouldStartWith("The passed value does not meet the criteria of:");
             thrown.Message.ShouldContain("x => x.Name.StartsWith(\"H\")");
             thrown.Message.ShouldEndWith(".");
+        }
+
+        [Test]
+        public void WhenSatisfies_Rule_Given_CompositeRuleIsNotSatisfied_Then_ThrownExceptionHasFriendlyMessage()
+        {
+            // Arrange
+            var startsWithRule = new Rule<Entity>(x => x.Name.StartsWith("B"));
+            var endsWithRule = new Rule<Entity>(x => x.Name.EndsWith("t"));
+            var combinedRule = startsWithRule & endsWithRule;
+            var entity = new Entity {Name = "Homer"};
+
+            // Act
+            var actual = Should.Throw<Exception>(() => _ = entity.WhenSatisfies(combinedRule));
+
+            // Assert
+            actual.Message.ShouldStartWith("The passed value does not meet the criteria of:");
+            actual.Message.ShouldContain("x => (x.Name.StartsWith(\"B\") AndAlso x.Name.EndsWith(\"t\"))");
+            actual.Message.ShouldEndWith(".");
         }
     }
 }
